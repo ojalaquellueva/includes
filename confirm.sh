@@ -10,7 +10,7 @@ if [ -z ${suppress_main+x} ]; then suppress_main='false'; fi
 if [[ "$i" = "true" ]] && [[ "$suppress_main" = "false" ]]; then 
 	# Construct confirmation message
 	# Displayed in interactive mode in effect
-	startup_msg="Run process "$pname"?"
+	startup_msg="Run process '"$pname"'?"
 
 	# Display options as well if provided
 	if ! [ -z "$startup_msg_opts" ]; then 
