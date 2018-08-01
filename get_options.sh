@@ -55,4 +55,3 @@ if [[ "$appendlog" == "false" ]]; then
 elif [ -f $glogfile ]; then
     touch $glogfile
 fi
-fi
