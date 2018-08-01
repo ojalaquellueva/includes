@@ -48,7 +48,8 @@ while [ "$1" != "" ]; do
     shift
 done
 
+
 # Replace global logfile if defined and appendlog=false
-if [ -z ${glogfile+x} ] && [[ "$appendlog" == "true" ]]; then
+if [[ "$appendlog" == "false" ]]; then
 	rm -f $glogfile; touch $glogfile
 fi
