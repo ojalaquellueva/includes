@@ -52,4 +52,7 @@ done
 # Replace global logfile if defined and appendlog=false
 if [[ "$appendlog" == "false" ]]; then
 	rm -f $glogfile; touch $glogfile
+elif [ -f $glogfile ]; then
+    touch $glogfile
+fi
 fi
