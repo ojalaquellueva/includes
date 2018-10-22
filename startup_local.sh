@@ -7,6 +7,8 @@
 # and adjust parameters, settings and messages accordingly.
 #########################################################################
 
+# hello world!
+
 # Load shared parameters if master script variable has not been set. 
 if [ -z ${master+x} ]; then
 	# reset master directory to parent directory
