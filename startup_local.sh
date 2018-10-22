@@ -12,6 +12,9 @@ if [ -z ${master+x} ]; then
 	# reset master directory to parent directory
 	DIR=$DIR_LOCAL"/.."
 	
+	# Base logfile name on local module
+	export glogfile="$DIR/log/logfile_"$local_basename".txt"
+	
 	# Load shared parameters & options files
 	source "$DIR/includes/get_params.sh"	# Parameters, files and paths
 	source "$DIR/includes/get_functions.sh"	# Load functions file(s)
@@ -68,7 +71,7 @@ if [ -z ${master+x} ]; then
 
 	if [ -z ${suppress_main+x} ]; then suppress_main='false'; fi
 
-	if [[ "$i" == "true" && "$suppress_main" == 'false' ]]; then 
+	if [[ "$i" == "true" && "$suppress_main" == "false" ]]; then 
 		# Reset confirmation message
 		msg_conf="$(cat <<-EOF
 
