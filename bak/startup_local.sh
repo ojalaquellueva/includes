@@ -7,8 +7,7 @@
 # and adjust parameters, settings and messages accordingly.
 #########################################################################
 
-# Get this directory
-thisdir="${BASH_SOURCE%/*}"
+# hello world!
 
 # Load shared parameters if master script variable has not been set. 
 if [ -z ${master+x} ]; then
@@ -19,9 +18,9 @@ if [ -z ${master+x} ]; then
 	export glogfile="$DIR/log/logfile_"$local_basename".txt"
 	
 	# Load shared parameters & options files
-	source $thisdir"/get_params.sh"	# Parameters, files and paths
-	source $thisdir"/get_functions.sh"	# Load functions file(s)
-	source $thisdir"/get_options.sh" # Get command line options
+	source "$DIR/includes/get_params.sh"	# Parameters, files and paths
+	source "$DIR/includes/get_functions.sh"	# Load functions file(s)
+	source "$DIR/includes/get_options.sh" # Get command line options
 	
 	if [ ! -z ${src_local+x} ]; then
 		# If applicable, set (missing) global source parameter 
