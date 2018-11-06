@@ -20,7 +20,7 @@ if [ -z ${master+x} ]; then
 	
 	# Load shared parameters & options files
 	source $thisdir"/get_params.sh"	# Parameters, files and paths
-	source $thisdir"/get_functions.sh"	# Load functions file(s)
+	source $thisdir"/functions.sh"	# Load functions file(s)
 	source $thisdir"/get_options.sh" # Get command line options
 	
 	if [ ! -z ${src_local+x} ]; then
