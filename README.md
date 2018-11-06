@@ -5,4 +5,4 @@ Email: ojalaquellueva@gmail.com
 
 ### Overview
 
-General-use include files, to be aded as git submodule. Shell scripts in this directory, all other languages in their own directories.
+General-use include files. Shell scripts in this directory, all other languages in their own subdirectories. Add to existing project as a git submodule.
