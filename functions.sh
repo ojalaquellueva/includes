@@ -202,33 +202,39 @@ exists_column_psql()
 	# Returns 't' if column exists, else 'f'
 	#  
 	# Usage:
-	# exists_column_psql -u [user] -d [db] -s [schema] -t [table] -c [column]
+	# exists_column_psql [-h $host] -u $user -d $db -s $schema -t $table -c $column
 	#############################################################
 	
+	# Set defaults
+	local host="localhost"
+
 	# Get parameters
 	while [ "$1" != "" ]; do
 		case $1 in
 			-u )			shift
-							user=$1
+							local user=$1
+							;;
+			-h )			shift
+							local host=$1
 							;;
 			-d )			shift
-							db=$1
+							local db=$1
 							;;
 			-s )			shift
-							schema=$1
+							local schema=$1
 							;;
 			-t )			shift
-							table=$1	
+							local table=$1	
 							;;
 			-c )			shift
-							column=$1	
+							local column=$1	
 							;;
 		esac
 		shift
 	done	
 	
 	sql_column_exists="SELECT EXISTS ( SELECT * FROM information_schema.columns WHERE column_name='$column' AND table_name='$table' AND table_schema='$schema') AS exists"
-	column_exists=`psql -U $user -d $db -lqt -c "$sql_column_exists" | tr -d '[[:space:]]'`
+	column_exists=`psql -h $host -U $user -d $db -lqt -c "$sql_column_exists" | tr -d '[[:space:]]'`
 	echo $column_exists
 }
 
@@ -240,37 +246,36 @@ exists_table_psql()
 	# Returns 't' if table exists, else 'f'
 	#
 	# Usage:
-	# exists_table_psql -u [user] -d [db] -s [schema] -t [table]
+	# exists_table_psql [-h $host] -u $user -d $db -s $schema -t $table
 	#############################################################
 	
+	# Set defaults
+	local host="localhost"
+
 	# Get parameters
 	while [ "$1" != "" ]; do
 		case $1 in
 			-u )			shift
-							user=$1
+							local user=$1
+							;;
+			-h )			shift
+							local host=$1
 							;;
 			-d )			shift
-							db=$1
+							local db=$1
 							;;
 			-s )			shift
-							schema=$1
+							local schema=$1
 							;;
 			-t )			shift
-							table=$1	
+							local table=$1	
 							;;
 		esac
 		shift
 	done	
 	
-	echo ""
-	echo "db: "$db
-	echo "user: "$user
-	echo "schema: "$schema
-	echo "table: "$table
-	echo
-	
 	sql_table_exists="SELECT EXISTS ( SELECT table_name FROM information_schema.tables WHERE table_name='$table' AND table_schema='$schema') AS exists_table"
-	table_exists=`psql -U $user -d $db -lqt -c "$sql_table_exists" | tr -d '[[:space:]]'`
+	table_exists=`psql -h $host -U $user -d $db -lqt -c "$sql_table_exists" | tr -d '[[:space:]]'`
 	echo $table_exists
 }
 
@@ -282,9 +287,8 @@ exists_schema_psql()
 	# Returns 't' if schema exists, else 'f'
 	#
 	# Usage:
-	# exists_schema_psql -u [user] -d [db] -s [schema]
+	# exists_schema_psql [-h $host] -u $user -d $db -s $schema
 	#############################################################
-	
 	
 	# Set defaults
 	local host="localhost"
@@ -293,16 +297,16 @@ exists_schema_psql()
 	while [ "$1" != "" ]; do
 		case $1 in
 			-u )			shift
-							user=$1
+							local user=$1
 							;;
 			-h )			shift
 							local host=$1
 							;;
 			-d )			shift
-							db=$1
+							local db=$1
 							;;
 			-s )			shift
-							schema=$1
+							local schema=$1
 							;;
 		esac
 		shift
@@ -321,30 +325,36 @@ exists_index_psql()
 	# Returns 't' if schema exists, else 'f'
 	#
 	# Usage:
-	# exists_schema_psql -u [user] -d [db] -s [schema] -i [index_name]
+	# exists_schema_psql [-h $host] -u $user -d $db -s $schema -i $index_name
 	#############################################################
 	
+	# Set defaults
+	local host="localhost"
+
 	# Get parameters
 	while [ "$1" != "" ]; do
 		case $1 in
 			-u )			shift
-							user=$1
+							local user=$1
+							;;
+			-h )			shift
+							local host=$1
 							;;
 			-d )			shift
-							db=$1
+							local db=$1
 							;;
 			-s )			shift
-							schema=$1
+							local schema=$1
 							;;
 			-i )			shift
-							idx=$1
+							local idx=$1
 							;;
 		esac
 		shift
 	done	
 	
 	sql_index_exists="SELECT EXISTS ( SELECT 1 FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace WHERE c.relname = '$idx' AND n.nspname = '$schema' ) AS a"
-	index_exists=`psql -U $user -d $db -lqt -c "$sql_index_exists" | tr -d '[[:space:]]'`
+	index_exists=`psql -h $host -U $user -d $db -lqt -c "$sql_index_exists" | tr -d '[[:space:]]'`
 	echo $index_exists
 }
 
