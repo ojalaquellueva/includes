@@ -278,18 +278,11 @@ exists_schema_psql()
 	# exists_schema_psql -u [user] -d [db] -s [schema]
 	#############################################################
 	
-	
-	# Set defaults
-	local host="localhost"
-
 	# Get parameters
 	while [ "$1" != "" ]; do
 		case $1 in
 			-u )			shift
 							user=$1
-							;;
-			-h )			shift
-							local host=$1
 							;;
 			-d )			shift
 							db=$1
@@ -302,7 +295,7 @@ exists_schema_psql()
 	done	
 	
 	sql_schema_exists="SELECT EXISTS ( SELECT schema_name FROM information_schema.schemata WHERE schema_name='$schema' ) AS exists_schema"
-	schema_exists=`psql -h $host -U $user -d $db -lqt -c "$sql_schema_exists" | tr -d '[[:space:]]'`
+	schema_exists=`psql -U $user -d $db -lqt -c "$sql_schema_exists" | tr -d '[[:space:]]'`
 	echo $schema_exists
 }
 
