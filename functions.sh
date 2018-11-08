@@ -262,6 +262,13 @@ exists_table_psql()
 		shift
 	done	
 	
+	echo ""
+	echo "db: "$db
+	echo "user: "$user
+	echo "schema: "$schema
+	echo "table: "$table
+	echo
+	
 	sql_table_exists="SELECT EXISTS ( SELECT table_name FROM information_schema.tables WHERE table_name='$table' AND table_schema='$schema') AS exists_table"
 	table_exists=`psql -U $user -d $db -lqt -c "$sql_table_exists" | tr -d '[[:space:]]'`
 	echo $table_exists
