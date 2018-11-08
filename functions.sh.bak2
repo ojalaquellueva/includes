@@ -31,39 +31,16 @@ checkemail()
 
 confirm()
 {
-	#################################################################
 	# Echos optional message if supplied
 	# Then prompts to continue
 	# Stops execution if any reply other than Y or y
-	#
-	# Options:
-	# 	-i	inline; echo entire message on same line
-	#################################################################
-
-	# Get parameters
-	inline="f"
-	msg=""
-	while [ "$1" != "" ]; do
-		# Get options, if any, and treat final token as message		
-		case $1 in
-			-i )			inline="t"	
-							shift
-							;;
-			* )            	msg="$1"
-							break
-							;;
-		esac
-	done	
 	
-	if [ $inline == "f" }; then
-		if ! [ -z "$1" ]; then 
-			echo "$msg"
-			echo
-			msg=""
-		fi
+	if ! [ -z "$1" ]; then 
+		echo "$1"
+		echo
 	fi
 	 	
-	read -p  "${msg}Continue? (Y/N): " -r
+	read -p  "Continue? (Y/N): " -r
 
 	if ! [[ $REPLY =~ ^[Yy]$ ]]; then
 		echo "Operation cancelled"
