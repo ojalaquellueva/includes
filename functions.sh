@@ -55,12 +55,14 @@ confirm()
 		esac
 	done	
 	
-	if [ $inline == "f" }; then
+	if [ $inline == "f" ]; then
 		if ! [ -z "$1" ]; then 
 			echo "$msg"
 			echo
 			msg=""
 		fi
+	else
+		msg=$msg" "
 	fi
 	 	
 	read -p  "${msg}Continue? (Y/N): " -r
