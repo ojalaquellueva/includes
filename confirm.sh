@@ -13,7 +13,7 @@ if [[ "$i" = "true" ]] && [[ "$suppress_main" = "false" ]]; then
 	startup_msg="Run process \""$pname"\"?"
 
 	# Display options as well if provided
-	if ! [ -z "$startup_msg_opts" ]; then 
+	if ! [[ -z "$startup_msg_opts" || "$startup_msg_opts" == "" ]]; then 
 		startup_msg="$(cat <<-EOF
 		${startup_msg} with following options:
 		
