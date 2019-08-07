@@ -125,7 +125,7 @@ confirm_ync()
 	
 	msg=$(trim ${msg})
 	
-	if ! [[ "$msg" == "" ]]; then msg="Continue?"; fi
+	if [[ "$msg" == "" ]]; then msg="Continue?"; fi
 	
 	if [ $inline == "f" ] && ! [ "$msg" == "Continue?" ]; then
 		if ! [ -z "$1" ]; then 
