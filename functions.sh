@@ -102,7 +102,7 @@ confirm_ync()
 	# If response is yes, continues and returns standardized 
 	#	response "y"
 	# If response is no, continues and returns standardized response "n"
-	# If any response other than [Yy] or [Nn] given, stops execution
+	# If any response other than [Yy] or [Nn] given, cancels execution
 	#
 	# Options:
 	# 	-i	inline; echo entire message on same line
@@ -137,7 +137,7 @@ confirm_ync()
 		msg=$msg" "
 	fi
 	 	
-	read -p  "${msg} (Y/N/[any other value to cancel]): " -r
+	read -p  "${msg} (Y/N): " -r
 	local response=$REPLY
 
 	if [[ $response =~ ^[Yy]$ ]]; then
