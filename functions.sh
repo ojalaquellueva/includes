@@ -6,6 +6,19 @@
 # Date created: 27 June 2016
 #################################################################
 
+trim_ws() {
+	##########################################
+	# Trims leading and trailing whitespace
+	# 
+	# Usage:
+	# str=$(trim ${str})
+	##########################################
+
+	local var="$*"
+	var2="$(echo -e ${var} | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+	echo -n "$var2"
+}
+
 checkemail()
 {
 	# Simple email validation function
@@ -18,7 +31,8 @@ checkemail()
 	else 
 		email=$1
 	
-		if [[ "$email" == ?*@?*.?* ]]  ; then
+		#if [[ "$email" == ?*@?*.?* ]]  ; then
+		if is_email_valid "$email" ;then
 			#echo $email": Valid email"
 			return 0
 		else
@@ -27,6 +41,11 @@ checkemail()
 		fi
 	fi
 
+}
+
+function is_email_valid() {
+	regex="^([A-Za-z]+[A-Za-z0-9]*((\.|\-|\_)?[A-Za-z]+[A-Za-z0-9]*){1,})@(([A-Za-z]+[A-Za-z0-9]*)+((\.|\-|\_)?([A-Za-z]+[A-Za-z0-9]*)+){1,})+\.([A-Za-z]{2,})+"
+	[[ "${1}" =~ $regex ]]
 }
 
 confirm()
@@ -73,6 +92,64 @@ confirm()
 	fi
 
 }
+
+confirm_ync()
+{
+	#################################################################
+	# Request confirmation and return response, or cancel 
+	# 
+	# Echos optional message if supplied then prompts to continue
+	# If response is yes, continues and returns standardized 
+	#	response "y"
+	# If response is no, continues and returns standardized response "n"
+	# If any response other than [Yy] or [Nn] given, stops execution
+	#
+	# Options:
+	# 	-i	inline; echo entire message on same line
+	#################################################################
+
+	# Get parameters
+	inline="f"
+	msg=""
+	while [ "$1" != "" ]; do
+		# Get options, if any, and treat final token as message		
+		case $1 in
+			-i )			inline="t"	
+							shift
+							;;
+			* )            	msg="$1"
+							break
+							;;
+		esac
+	done	
+	
+	msg=$(trim ${msg})
+	
+	if ! [[ "$msg" == "" ]]; then msg="Continue?"; fi
+	
+	if [ $inline == "f" ] && ! [ "$msg" == "Continue?" ]; then
+		if ! [ -z "$1" ]; then 
+			echo "$msg"
+			echo
+			msg=""
+		fi
+	else
+		msg=$msg" "
+	fi
+	 	
+	read -p  "${msg} (Y/N/[any other value to cancel]): " -r
+	local response=$REPLY
+
+	if [[ $response =~ ^[Yy]$ ]] || ; then
+		echo "y"
+	elif [[ $response =~ ^[Nn]$ ]] || ; then
+		echo "n"
+	else
+			echo "Operation cancelled"
+			exit 0
+	fi
+}
+
 
 echoi()
 {
@@ -444,19 +521,6 @@ trim() {
     # remove trailing whitespace characters
     var="${var%"${var##*[![:space:]]}"}"   
     echo -n "$var"
-}
-
-trim_ws() {
-	##########################################
-	# Trims leading and trailing whitespace
-	# 
-	# Usage:
-	# str=$(trim ${str})
-	##########################################
-
-	local var="$*"
-	var2="$(echo -e ${var} | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
-	echo -n "$var2"
 }
 
 is_unique_psql()
