@@ -140,9 +140,9 @@ confirm_ync()
 	read -p  "${msg} (Y/N/[any other value to cancel]): " -r
 	local response=$REPLY
 
-	if [[ $response =~ ^[Yy]$ ]] || ; then
+	if [[ $response =~ ^[Yy]$ ]]; then
 		echo "y"
-	elif [[ $response =~ ^[Nn]$ ]] || ; then
+	elif [[ $response =~ ^[Nn]$ ]]; then
 		echo "n"
 	else
 			echo "Operation cancelled"
