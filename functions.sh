@@ -336,7 +336,7 @@ exists_column_psql()
 	done	
 	
 	sql_column_exists="SELECT EXISTS ( SELECT * FROM information_schema.columns WHERE column_name='$column' AND table_name='$table' AND table_schema='$schema') AS exists"
-	column_exists=`psql -h $host -U $user -d $db -lqt -c "$sql_column_exists" | tr -d '[[:space:]]'`
+	column_exists=`psql -h $host -U $user -d $db -qt -c "$sql_column_exists" | tr -d '[[:space:]]'`
 	echo $column_exists
 }
 
@@ -377,7 +377,7 @@ exists_table_psql()
 	done	
 	
 	sql_table_exists="SELECT EXISTS ( SELECT table_name FROM information_schema.tables WHERE table_name='$table' AND table_schema='$schema') AS exists_table"
-	table_exists=`psql -h $host -U $user -d $db -lqt -c "$sql_table_exists" | tr -d '[[:space:]]'`
+	table_exists=`psql -h $host -U $user -d $db -qt -c "$sql_table_exists" | tr -d '[[:space:]]'`
 	echo $table_exists
 }
 
@@ -415,7 +415,7 @@ exists_schema_psql()
 	done	
 	
 	sql_schema_exists="SELECT EXISTS ( SELECT schema_name FROM information_schema.schemata WHERE schema_name='$schema' ) AS exists_schema"
-	schema_exists=`psql -h $host -U $user -d $db -lqt -c "$sql_schema_exists" | tr -d '[[:space:]]'`
+	schema_exists=`psql -h $host -U $user -d $db -qt -c "$sql_schema_exists" | tr -d '[[:space:]]'`
 	echo $schema_exists
 }
 
@@ -456,7 +456,7 @@ exists_index_psql()
 	done	
 	
 	sql_index_exists="SELECT EXISTS ( SELECT 1 FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace WHERE c.relname = '$idx' AND n.nspname = '$schema' ) AS a"
-	index_exists=`psql -h $host -U $user -d $db -lqt -c "$sql_index_exists" | tr -d '[[:space:]]'`
+	index_exists=`psql -h $host -U $user -d $db -qt -c "$sql_index_exists" | tr -d '[[:space:]]'`
 	echo $index_exists
 }
 
@@ -505,7 +505,7 @@ has_records_psql()
 	done	
 	
 	sql_has_records="SELECT EXISTS ( SELECT * FROM $table ) AS a"
-	has_records=`psql -U $user -d $db -lqt -c "$sql_has_records" | tr -d '[[:space:]]'`
+	has_records=`psql -U $user -d $db -qt -c "$sql_has_records" | tr -d '[[:space:]]'`
 	echo $has_records
 }
 
@@ -559,6 +559,6 @@ is_unique_psql()
 	done	
 		
 	sql_is_unique="SELECT NOT EXISTS ( SELECT $column, COUNT(*) FROM $schema.$table GROUP BY $column HAVING COUNT(*)>1 ) AS a"
-	is_unique=`psql -U $user -d $db -lqt -c "$sql_is_unique" | tr -d '[[:space:]]'`
+	is_unique=`psql -U $user -d $db -qt -c "$sql_is_unique" | tr -d '[[:space:]]'`
 	echo $is_unique
 }
