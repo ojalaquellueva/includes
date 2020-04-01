@@ -34,5 +34,5 @@ if [[ "$m" = "true" ]]; then
 	source "$DIR/includes/mail_process_start.sh"	# Email notification
 fi
 
-echoi $e ""; echoi $e "------ Begin operation '$pname' ------"
+echoi $e ""; echoi $e "------ Begin process '$pname' ------"
 echoi $e ""

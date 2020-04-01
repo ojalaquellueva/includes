@@ -38,6 +38,6 @@ if [ -z ${master+x} ]; then
 	# Main
 	#########################################################################
 
-	echoi $e ""; echoi $e "------ Begin operation '$pname' ------"
+	echoi $e ""; echoi $e "------ Begin process '$pname' ------"
 	
 fi

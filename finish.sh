@@ -27,6 +27,6 @@ if [[ "$m" = "true" ]]; then
 fi
 
 echoi $e "" 
-echoi $e "------ Operation '$pname' completed in $elapsed seconds ------"
+echoi $e "------ Process '$pname' completed in $elapsed seconds ------"
 echoi $e ""
 exit 0

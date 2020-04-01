@@ -1,5 +1,5 @@
 #!/bin/bash
 
-# Start timing & set process ID
+# Start timer & set process ID
 start=`date +%s%N`; prev=$start
 pid=$$

@@ -17,5 +17,5 @@ if [[ "$m" = "true" ]]; then
 	source "${thisdir}/mail_process_start.sh"	# Email notification
 fi
 
-echoi $e ""; echoi $e "------ Operation started at $starttime ------"
+echoi $e ""; echoi $e "------ Process started at $starttime ------"
 echoi $e ""
