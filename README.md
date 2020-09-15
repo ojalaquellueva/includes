@@ -1,4 +1,4 @@
-# General-purpose include scripts
+# General-purpose bash scripts and functions
 
 * For use as git submodule in other application repos
 * Remote: `https://github.com/ojalaquellueva/includes`
