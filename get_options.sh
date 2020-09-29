@@ -31,6 +31,7 @@ while [ "$1" != "" ]; do
         -n | --nowarnings )		i="false"
         						;;
         -s | --silent )			e="false"
+        						i="false"
         						;;
         -m | --mail )         	m="true"
                                 ;;

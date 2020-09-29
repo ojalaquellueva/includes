@@ -12,8 +12,8 @@ starttime="$(date)"
 start=`date +%s%N`; prev=$start
 pid=$$
 
-if [ -z ${master+x} ]; then
-	# Echo startup messages if running as master
+if [ -z ${master+x} ] && [ "$i" == "true" ]; then
+	# Echo startup messages if running as master & interactive mode on
 	
 	# Send notification email if this option set
 	if [[ "$m" = "true" ]]; then 
