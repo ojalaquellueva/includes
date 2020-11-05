@@ -4,8 +4,10 @@
 # Starts timer, sends confirmation email if requested
 # and echoes operation start message
 ######################################################
-# Get this directory
-thisdir="${BASH_SOURCE%/*}"
+
+# Get directory of this script
+# See: https://unix.stackexchange.com/a/4658/392830
+thisdir=($_)
 
 # Start timing & process ID
 starttime="$(date)"

@@ -4,8 +4,9 @@
 # Purpose: Loads parameters, functions & issues startup messages
 #########################################################################
 
-# Get this directory
-thisdir="${BASH_SOURCE%/*}"
+# Get directory of this script
+# See: https://unix.stackexchange.com/a/4658/392830
+thisdir=($_)
 
 source $thisdir"/get_params.sh"	# Parameters, files and paths
 source $thisdir"/functions.sh"	# Load functions file(s)

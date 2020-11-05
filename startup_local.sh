@@ -7,8 +7,9 @@
 # and adjust parameters, settings and messages accordingly.
 #########################################################################
 
-# Get this directory
-thisdir="${BASH_SOURCE%/*}"
+# Get directory of this script
+# See: https://unix.stackexchange.com/a/4658/392830
+thisdir=($_)
 
 # Load shared parameters if master script variable has not been set. 
 if [ -z ${master+x} ]; then
