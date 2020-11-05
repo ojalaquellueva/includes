@@ -8,8 +8,7 @@
 #########################################################################
 
 # Get directory of this script
-# See: https://unix.stackexchange.com/a/4658/392830
-thisdir=($_)
+thisdir=$(dirname ${BASH_SOURCE[0]})
 
 # Load shared parameters if master script variable has not been set. 
 if [ -z ${master+x} ]; then

@@ -5,8 +5,7 @@
 #########################################################################
 
 # Get directory of this script
-# See: https://unix.stackexchange.com/a/4658/392830
-thisdir=($_)
+thisdir=$(dirname ${BASH_SOURCE[0]})
 
 source $thisdir"/get_params.sh"	# Parameters, files and paths
 source $thisdir"/functions.sh"	# Load functions file(s)
