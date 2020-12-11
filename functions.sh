@@ -562,3 +562,38 @@ is_unique_psql()
 	is_unique=`psql -U $user -d $db -qt -c "$sql_is_unique" | tr -d '[[:space:]]'`
 	echo $is_unique
 }
+
+count_rows_psql()
+{
+	#############################################################
+	# Counts rows in table tbl in database $db
+	# Returns record count if table exists, else returns error
+	# message (does not abort or return non-zero exit code)
+	#
+	# Usage:
+	# count_rows_psql -u [user] -d [db] -t [table]
+	# 
+	# Note: table name can be schema qualified 
+	#############################################################
+	
+	# Get parameters
+	while [ "$1" != "" ]; do
+		case $1 in
+			-u )			shift
+							user=$1
+							;;
+			-d )			shift
+							db=$1
+							;;
+			-t )			shift
+							table=$1	
+							;;
+		esac
+		shift
+	done	
+	
+	sql_rows="SELECT COUNT(*) FROM $table"
+	result=`psql -U $user -d $db -qt -c "$sql_rows" | tr -d '[[:space:]]'` || { result="WARNING: Function count_rows_psql failed! (d=${db}, u=${user}, t=${table}" }
+	echo $result
+}
+
