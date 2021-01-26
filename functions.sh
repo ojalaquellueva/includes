@@ -596,3 +596,127 @@ count_rows_psql()
 	echo $result
 }
 
+drop_indexes() {
+	##################################################
+	# Drops all indexes on table $table in schema $sch
+	# of database $db
+	#
+	# Notes:
+	#	1. User must have all relevant permissions
+	#	2. Primary key constraint must be named *_pkey* for -p option to work
+	#
+	# Requires custom functions:
+	#  echoi()
+	#  exists_db_psql()
+	#  exists_schema_psql()
+	#  exists_table_psql()
+	#
+	# Parameters:
+	#	h	host (default: localhost)
+	#	u	user name
+	#	d	database name
+	#	s	schema name
+	#	t	table name
+	#	p	drop primary key as well (default: false)
+	#	q	quiet, no confirmation or progress echoes (default: false)
+	#	
+	# Usage:
+	#	drop_all_indexes [-q] [-p] [-i] [-h $host] -u $user -d $db -s $schema -t $table
+	##################################################
+
+	local host='localhost'
+	local quiet='f'
+	local e='true'
+	local drop_pk='f'
+	local what='all indexes'
+
+	# Dummy values double as automatic error messages 
+	# and prevent dangerous parameter skipping
+	local user='no-user-defined'
+	local db='no-db-defined'
+	local sch='no-schema-defined'
+	local tbl='no-table-defined'
+
+	# Get parameters
+	while [ "$1" != "" ]; do
+		# Get options, treating final 
+		# token as message		
+		#send="false"
+		case $1 in
+			-h )			shift
+							host=$1
+							;;
+			-u )			shift
+							user=$1
+							;;
+			-d )			shift
+							db=$1
+							;;
+			-s )			shift
+							sch=$1
+							;;
+			-t )			shift
+							tbl=$1
+							;;
+			-q )			quiet='t'
+							e=''
+							;;
+			-p )			drop_pk='t'
+							;;
+		esac
+		shift
+	done	
+	
+	if [ "$drop_pk" == "t" ]; then
+		what="primary key and $what"
+	fi 
+	
+	if [ "$quiet" == "f" ]; then
+		read -p  "Drop ${what} on table ${tbl} in schema ${sch} of db ${db}? (Y/N): " -r
+
+		if ! [[ $REPLY =~ ^[Yy]$ ]]; then
+			echo "Operation cancelled"
+			exit 0
+		fi
+	fi
+	
+	# Validate parameters
+	if [[ $(exists_db_psql $db) == "f" ]]; then
+		echo "$db: no such database (func drop_all_indexes)"; exit 1
+	fi
+	if [[ $(exists_schema_psql -u $user -d $db -s $sch) == "f" ]]; then
+		echo "$sch: no such schema in db $db (func drop_all_indexes)"; exit 1
+	fi
+	if [[ $(exists_table_psql -u $user -d $db -s $sch -t $tbl) == "f" ]]; then
+		echo "$tbl: no such table in schema $sch (func drop_all_indexes)"; exit 1
+	fi
+
+	echoi $e "Dropping indexes:"
+	local sql_indexes="select indexname from pg_indexes where schemaname='${sch}' and tablename='${tbl}' and indexname not like '%_pkey%' order by indexname"
+	for idx in $(psql -h localhost -U $user -d $db -qt  -c "$sql_indexes"); do
+		echoi $e -n "  "$idx"..."
+		local sql_drop_idx="DROP INDEX IF EXISTS ${idx}"
+		PGOPTIONS='--client-min-messages=warning' psql -h $host -U $user -d $db -q << EOF
+		\set ON_ERROR_STOP on
+		SET search_path TO $sch;
+		$sql_drop_idx
+EOF
+		echoi $e "done"
+	done
+	
+	if [ "$drop_pk" == "t" ]; then
+		echoi $e "Dropping primary key:"
+		local sql_indexes="select indexname from pg_indexes where schemaname='${sch}' and tablename='${tbl}' and indexname like '%_pkey%' order by indexname"
+		for idx in $(psql -h localhost -U $user -d $db -qt  -c "$sql_indexes"); do
+			echoi $e -n "  "$idx"..."
+			local sql_drop_idx="ALTER TABLE ${tbl} DROP CONSTRAINT IF EXISTS ${idx}"
+			PGOPTIONS='--client-min-messages=warning' psql -h $host -U $user -d $db -q << EOF
+			\set ON_ERROR_STOP on
+			SET search_path TO $sch;
+			$sql_drop_idx
+EOF
+			echoi $e "done"
+		done
+	fi
+	
+}
