@@ -684,10 +684,10 @@ drop_indexes() {
 	if [[ $(exists_db_psql $db) == "f" ]]; then
 		echo "$db: no such database (func drop_all_indexes)"; exit 1
 	fi
-	if [[ $(exists_schema_psql -u $user -d $db -s $sch) == "f" ]]; then
+	if [[ $(exists_schema_psql -h $host -u $user -d $db -s $sch) == "f" ]]; then
 		echo "$sch: no such schema in db $db (func drop_all_indexes)"; exit 1
 	fi
-	if [[ $(exists_table_psql -u $user -d $db -s $sch -t $tbl) == "f" ]]; then
+	if [[ $(exists_table_psql -h $host -u $user -d $db -s $sch -t $tbl) == "f" ]]; then
 		echo "$tbl: no such table in schema $sch (func drop_all_indexes)"; exit 1
 	fi
 
@@ -719,4 +719,106 @@ EOF
 		done
 	fi
 	
+}
+
+check_pk() {
+	##################################################
+	# Check if candidate primary key column is unique
+	#
+	# Requires functions:
+	#  exists_db_psql()
+	#  exists_schema_psql()
+	#  exists_table_psql()
+	#  exists_column_psql()
+	#
+	# Parameters:
+	#	n	No quit: don't exit on error (default: false)
+	#	q	Quiet: no progress echo unless error (default: false)
+	#	h	Host (default: localhost)
+	#	u	User 
+	#	d	Database 
+	#	s	Schema 
+	#	t	Table 
+	#	c	Column to check
+	#	
+	# Usage:
+	#	check_pk [-q] [-n] [-h $host] -u $user -d $db -s $sch -t $tbl -c $col
+	##################################################
+
+	local host='localhost'
+	local e='f'
+
+	# Dummy values double as automatic error messages 
+	# Also prevent dangerous parameter skipping
+	local user='no-user-defined'
+	local db='no-db-defined'
+	local sch='no-schema-defined'
+	local tbl='no-table-defined'
+	local col='no-column-defined'
+	local exit_on_error='t'
+	local quiet='f'
+
+	# Get parameters
+	while [ "$1" != "" ]; do
+		# Get options, treating final 
+		# token as message		
+		#send="false"
+		case $1 in
+			-h )			shift
+							host=$1
+							;;
+			-u )			shift
+							user=$1
+							;;
+			-d )			shift
+							db=$1
+							;;
+			-s )			shift
+							sch=$1
+							;;
+			-t )			shift
+							tbl=$1
+							;;
+			-c )			shift
+							col=$1
+							;;
+			-n )			exit_on_error='f'
+							;;
+			-q )			quiet='t'
+							;;
+		esac
+		shift
+	done	
+	
+	# Validate parameters
+	if [[ $(exists_db_psql $db) == "f" ]]; then
+		echo "$db: no such database (func drop_all_indexes)"; exit 1
+	fi
+	if [[ $(exists_schema_psql -h $host -u $user -d $db -s $sch) == "f" ]]; then
+		echo "$sch: no such schema in db $db (func check_pk)"; exit 1
+	fi
+	if [[ $(exists_table_psql -h $host -u $user -d $db -s $sch -t $tbl) == "f" ]]; then
+		echo "$tbl: no such table in schema $sch (func check_pk)"; exit 1
+	fi
+	if [[ $(exists_column_psql -h $host -u $user -d $db -s $sch -t $tbl -c $col) == "f" ]]; then
+		echo "$col: no such column in table ${sch}.${tbl} (func check_pk)"; exit 1
+	fi
+
+	if [ "$quiet" == "f" ]; then
+		echo -n "- Checking candidate pkey ${col} in table ${tbl}..."
+	fi
+	
+	sql_is_unique="SELECT NOT EXISTS ( SELECT ${col}, COUNT(*) FROM ${sch}.${tbl} GROUP BY ${col} HAVING COUNT(*)>1 ) AS a"
+	is_unique=`psql -h $host -U $user -d $db -qt -c "$sql_is_unique" | tr -d '[[:space:]]'`
+	if [[ "$is_unique" == "f" ]]; then
+		echo "ERROR: Column \"$col\" NOT UNIQUE!"
+		if [ "$exit_on_error" == "t" ]; then
+			exit 1
+		fi
+	else
+		if [ "$quiet" == "f" ]; then
+			echo "OK"
+		fi
+	fi
+
 }
