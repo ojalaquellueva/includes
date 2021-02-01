@@ -747,6 +747,7 @@ check_pk() {
 
 	local host='localhost'
 	local e='f'
+	local fncname="check_pk"
 
 	# Dummy values double as automatic error messages 
 	# Also prevent dangerous parameter skipping
@@ -792,16 +793,16 @@ check_pk() {
 	
 	# Validate parameters
 	if [[ $(exists_db_psql $db) == "f" ]]; then
-		echo "$db: no such database (func drop_all_indexes)"; exit 1
+		echo "$db: no such database (func ${fncname})"; exit 1
 	fi
 	if [[ $(exists_schema_psql -h $host -u $user -d $db -s $sch) == "f" ]]; then
-		echo "$sch: no such schema in db $db (func check_pk)"; exit 1
+		echo "$sch: no such schema in db $db (func ${fncname})"; exit 1
 	fi
 	if [[ $(exists_table_psql -h $host -u $user -d $db -s $sch -t $tbl) == "f" ]]; then
-		echo "$tbl: no such table in schema $sch (func check_pk)"; exit 1
+		echo "$tbl: no such table in schema $sch (func ${fncname})"; exit 1
 	fi
 	if [[ $(exists_column_psql -h $host -u $user -d $db -s $sch -t $tbl -c $col) == "f" ]]; then
-		echo "$col: no such column in table ${sch}.${tbl} (func check_pk)"; exit 1
+		echo "$col: no such column in table ${sch}.${tbl} (func ${fncname})"; exit 1
 	fi
 
 	if [ "$quiet" == "f" ]; then
