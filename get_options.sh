@@ -23,12 +23,15 @@
 # Set defaults
 i="true"						# Interactive mode on by default
 e="true"						# Echo on by default
+verbose="false"					# Minimal progress output
 appendlog="false"				# Append to existing logfile 
 
 # Get options
 while [ "$1" != "" ]; do
     case $1 in
         -n | --nowarnings )		i="false"
+        						;;
+        -v | --verbose )		verbose="true"
         						;;
         -s | --silent )			e="false"
         						i="false"

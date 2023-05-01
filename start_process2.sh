@@ -13,14 +13,12 @@ starttime="$(date)"
 start=`date +%s%N`; prev=$start
 pid=$$
 
-if [ -z ${master+x} ] && [ "$i" == "true" ]; then
-	# Echo startup messages if running as master & interactive mode on
-	
+if ! $quiet; then	
+	echo "------ Process started at $starttime ------"
+	echo ""
+
 	# Send notification email if this option set
-	if [[ "$m" = "true" ]]; then 
+	if $notify; then 
 		source "${thisdir}/mail_process_start.sh"	# Email notification
 	fi
-
-	echoi $e ""; echoi $e "------ Process started at $starttime ------"
-	echoi $e ""
 fi
