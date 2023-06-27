@@ -618,8 +618,6 @@ drop_indexes() {
 	#	s	schema name
 	#	t	table name
 	#	p	drop primary key as well (default: false)
-	#	c	drop foreign key constraints as well (default: false)
-	#	a	cascade pk constraint: drops dependent table fk constraints
 	#	q	quiet, no confirmation or progress echoes (default: false)
 	#	
 	# Usage:
@@ -630,8 +628,6 @@ drop_indexes() {
 	local quiet='f'
 	local e='true'
 	local drop_pk='f'
-	local drop_con='f'
-	local cascade=''
 	local what='all indexes'
 
 	# Dummy values double as automatic error messages 
@@ -667,10 +663,6 @@ drop_indexes() {
 							;;
 			-p )			drop_pk='t'
 							;;
-			-c )			drop_con='t'
-							;;
-			-a )			cascade=' CASCADE '
-							;;
 		esac
 		shift
 	done	
@@ -679,10 +671,6 @@ drop_indexes() {
 		what="primary key and $what"
 	fi 
 	
-	if [ "$drop_con" == "t" ]; then
-		what=" $what and all constraints"
-	fi 
-
 	if [ "$quiet" == "f" ]; then
 		read -p  "Drop ${what} on table ${tbl} in schema ${sch} of db ${db}? (Y/N): " -r
 
@@ -703,27 +691,11 @@ drop_indexes() {
 		echo "$tbl: no such table in schema $sch (func drop_all_indexes)"; exit 1
 	fi
 
-	if [ "$drop_con" == "t" ]; then
-		echoi $e "Dropping unique and foreign key constraints:"
-#		local sql_cons="SELECT conname, pg_catalog.pg_get_constraintdef(r.oid, true) as condef FROM pg_catalog.pg_constraint r WHERE r.conrelid='${tbl}'::regclass AND r.contype = 'f' ORDER BY 1"
-		local sql_cons="SELECT conname as con, pg_catalog.pg_get_constraintdef(r.oid, true) as condef FROM pg_catalog.pg_constraint r WHERE r.conrelid='${tbl}'::regclass ORDER BY 1"
-			for con in $(psql -h localhost -U $user -d $db -qt  -c "$sql_cons"); do
-			echoi $e -n "  "$con"..."
-			local sql_drop_con="ALTER TABLE ${tbl} DROP CONSTRAINT IF EXISTS ${con} ${cascade}"
-			PGOPTIONS='--client-min-messages=warning' psql -h $host -U $user -d $db -q << EOF
-			\set ON_ERROR_STOP on
-			SET search_path TO $sch;
-			$sql_drop_con
-EOF
-			echoi $e "done"
-		done
-	fi
-
 	echoi $e "Dropping indexes:"
 	local sql_indexes="select indexname from pg_indexes where schemaname='${sch}' and tablename='${tbl}' and indexname not like '%_pkey%' order by indexname"
 	for idx in $(psql -h localhost -U $user -d $db -qt  -c "$sql_indexes"); do
 		echoi $e -n "  "$idx"..."
-		local sql_drop_idx="DROP INDEX IF EXISTS ${idx} ${cascade} "
+		local sql_drop_idx="DROP INDEX IF EXISTS ${idx}"
 		PGOPTIONS='--client-min-messages=warning' psql -h $host -U $user -d $db -q << EOF
 		\set ON_ERROR_STOP on
 		SET search_path TO $sch;
@@ -734,14 +706,14 @@ EOF
 	
 	if [ "$drop_pk" == "t" ]; then
 		echoi $e "Dropping primary key:"
-		local sql_pk_cons="select indexname as pk_con from pg_indexes where schemaname='${sch}' and tablename='${tbl}' and indexname like '%_pkey%' order by indexname"
-		for pk_con in $(psql -h localhost -U $user -d $db -qt  -c "$sql_pk_cons"); do
+		local sql_indexes="select indexname from pg_indexes where schemaname='${sch}' and tablename='${tbl}' and indexname like '%_pkey%' order by indexname"
+		for idx in $(psql -h localhost -U $user -d $db -qt  -c "$sql_indexes"); do
 			echoi $e -n "  "$idx"..."
-			local sql_drop_pk="ALTER TABLE ${tbl} DROP CONSTRAINT IF EXISTS ${pk_con} ${cascade} "
+			local sql_drop_idx="ALTER TABLE ${tbl} DROP CONSTRAINT IF EXISTS ${idx}"
 			PGOPTIONS='--client-min-messages=warning' psql -h $host -U $user -d $db -q << EOF
 			\set ON_ERROR_STOP on
 			SET search_path TO $sch;
-			$sql_drop_pk
+			$sql_drop_idx
 EOF
 			echoi $e "done"
 		done
