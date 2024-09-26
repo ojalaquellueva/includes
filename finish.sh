@@ -19,7 +19,7 @@
 elapsed=$(etime $start)
 
 # Send notification if requested
-if [[ "$m" = "true" ]]; then
+if [[ "$m" == "true" ]]; then
 	endtime=`date`
 	subject="Process "$pname" completed"
 	msg="Process PID "$pid" completed: $endtime"

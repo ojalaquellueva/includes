@@ -1,37 +1,61 @@
--- -----------------------------------------------------------
--- Update DB metadata for this hotfix (minor version update)
--- -----------------------------------------------------------
+#!/bin/bash
 
-\c vegbien
-SET search_path TO analytical_db;
+#########################################################################
+# Purpose: Gets command line switches and sets options accordingly
+#
+# Keeping this in separate script allows it to be used by individual
+# pipeline scripts run on their own
+#########################################################################
 
--- \c public_vegbien
 
-UPDATE bien_metadata
---SET db_retired_date=now()::timestamp::date
-SET db_retired_date='2022-10-19'::date
-WHERE bien_metadata_id=(
-SELECT MAX(bien_metadata_id) FROM bien_metadata
-);
+###########################################################
+# Get options
+#   -n  No confirm. All interactive warnings suppressed
+#   -s  Silent mode. Suppresses screen echo.
+#   -m	Send email notification. Must supply valid email 
+#		in params file.
+# 	-d 	Database to connect to (no default)
+#	-c	Schema to connect to (no default)
+#	-a	Append to existing logfile (=$glogfile). If not 
+#		provided, default is start new (replace old if exists)
+###########################################################
 
--- Insert new record for new minor version
-INSERT INTO bien_metadata (
-db_version,
-db_release_date,
-version_comments,
-db_code_version,
-rbien_version,
-rtodobien_version,
-tnrs_version
-)
-VALUES (
-'4.2.6',
---now()::timestamp::date,
-'2022-10-19'::date,
-'Minor release: add column gbif_datasetkey to table view_full_occurrence_individual',
-'4.2.7',
-'1.2.3',
-'1.2.3',
-'5.0.3'
-)
-;
+# Set defaults
+i="true"						# Interactive mode on by default
+e="true"						# Echo on by default
+verbose="false"					# Minimal progress output
+appendlog="false"				# Append to existing logfile 
+
+# Get options
+while [ "$1" != "" ]; do
+    case $1 in
+        -n | --nowarnings )		i="false"
+        						;;
+        -v | --verbose )		verbose="true"
+        						;;
+        -s | --silent )			e="false"
+        						i="false"
+        						;;
+        -m | --mail )         	m="true"
+                                ;;
+        -d | --database )       db="$2"
+        						shift
+                                ;;
+        -c | --schema )         sch="$2"
+        						shift
+                                ;;
+        -a | --appendlog )		appendlog="true" 	# Start new logfile, 
+        											# replace if exists
+        						;;
+        * )                     echo "invalid option!"; exit 1
+    esac
+    shift
+done
+
+
+# Replace global logfile if defined and appendlog=false
+if [[ "$appendlog" == "false" ]]; then
+	rm -f $glogfile; touch $glogfile
+elif [ -f $glogfile ]; then
+    touch $glogfile
+fi

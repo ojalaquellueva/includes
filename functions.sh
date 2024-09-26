@@ -513,6 +513,10 @@ has_records_psql()
 trim() {
 	##########################################
 	# Trims leading and trailing whitespace
+	# This is the best solution
+	# See: https://stackoverflow.com/a/3352015/2757825
+	#
+	# Usage: myvar_trimmed=$(trim ${myvar})
 	##########################################
 
     local var="$*"
