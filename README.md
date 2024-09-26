@@ -1,13 +1,12 @@
 # General-purpose bash scripts and functions
 
 * For use as git submodule in other application repos
-* Remote: `https://github.com/ojalaquellueva/includes`
-* Master local repo: `/home/bien/includes/sh` on vegbiendev`
+* Remote repo: `https://github.com/ojalaquellueva/includes`
+* Master local repo: `/home/bien/submodules/includes` (vegbiendev)
 
 ## WARNING
 
-* Edit these files ***only*** in the "Master local repo",   
-  shown above. Files at any other location have been   
-  copied there automatically by git as part of a submodule.
-  Changes to files in submodules will be lost.
+* Edit these files ***only*** in the "Master local repo" (see above). 
+* Files at other locations have been cloned there from GitHub as part of a submodule.
+* Changes to files not inside master local repo will be lost.
 
