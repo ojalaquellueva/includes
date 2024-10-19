@@ -63,30 +63,6 @@ if [ -z ${master+x} ]; then
 	pname=$pname_local
 	pname_header=$pname_local_header
 
-	######################################################
-	# Confirm operation (interactive mode only), start
-	# timer & send confirmation email if requested
-	######################################################
-
-	if [ -z ${master+x} ]; then
-		target_sch_msg=", target schema: "$dev_schema
-	fi
-
-	if [ -z ${suppress_main+x} ]; then suppress_main='false'; fi
-
-	if [[ "$i" == "true" && "$suppress_main" == "false" ]]; then 
-		# Reset confirmation message
-		msg_conf="$(cat <<-EOF
-
-		Run process "$pname"? with following options:
-	
-			Db: $db_main$target_sch_msg
-
-		Warning: SLOW...Run in unix screen session!
-		EOF
-		)"		
-		confirm "$msg_conf"
-	fi
 	# Reset the message suppression variable
 	suppress_main='false'
 	
